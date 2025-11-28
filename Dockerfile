@@ -25,28 +25,16 @@ RUN composer install --no-dev --optimize-autoloader
 # Copy example env if not present
 RUN if [ ! -f .env ]; then cp .env.example .env; fi
 
-# Generate app key
-RUN php artisan key:generate
-
-# Add this to your Dockerfile
-RUN touch /var/www/html/database/database.sqlite
-RUN chmod 775 /var/www/html/database/database.sqlite
-
-# Set permissions
-RUN chmod -R 777 storage bootstrap/cache
-
  
- 
+# Create SQLite database file if it doesn't exist
+RUN touch database/database.sqlite
+RUN chmod -R 777 database
+
+# Laravel setup
+RUN php artisan migrate --force --no-interaction || exit 0
+RUN php artisan db:seed --force || exit 0
+RUN php artisan key:generate --force
 RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
-
-
-
-# this creates the tables
-RUN php artisan migrate --force
-
-RUN php artisan db:seed --force
 
 EXPOSE 8000
 
