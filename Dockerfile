@@ -1,66 +1,49 @@
-# ---------------------------
-# 1. Base PHP Image with Composer
-# ---------------------------
 FROM php:8.2-fpm
 
-# ---------------------------
-# 2. Install system dependencies
-# ---------------------------
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
-    libzip-dev \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
     curl \
+    libpq-dev \
+    libzip-dev \
     zip \
-    supervisor \
-    nginx \
-    nodejs \
-    npm \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip xml
+    && docker-php-ext-install pdo pdo_mysql zip
 
-# ---------------------------
-# 3. Set working directory
-# ---------------------------
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
 WORKDIR /var/www/html
 
-# ---------------------------
-# 4. Copy project files
-# ---------------------------
-COPY . /var/www/html
+# Copy project files
+COPY . .
 
-# ---------------------------
-# 5. Install PHP dependencies
-# ---------------------------
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# ---------------------------
-# 6. Install Node.js dependencies & build assets
-# ---------------------------
-RUN npm install
-RUN npm run build
+# Copy example env if not present
+RUN if [ ! -f .env ]; then cp .env.example .env; fi
 
-# ---------------------------
-# 7. Set permissions
-# ---------------------------
-RUN chown -R www-data:www-data /var/www/html
-RUN chmod -R 775 /var/www/html/storage
-RUN chmod -R 775 /var/www/html/bootstrap/cache
+# Generate app key
+RUN php artisan key:generate
 
-# ---------------------------
-# 8. Copy Nginx configuration
-# ---------------------------
-COPY ./docker/nginx/default.conf /etc/nginx/sites-available/default
+# Add this to your Dockerfile
+RUN touch /var/www/html/database/database.sqlite
+RUN chmod 775 /var/www/html/database/database.sqlite
 
-# ---------------------------
-# 9. Expose port
-# ---------------------------
-EXPOSE 80
+# Set permissions
+RUN chmod -R 777 storage bootstrap/cache
 
-# ---------------------------
-# 10. Start services
-# ---------------------------
-CMD ["sh", "-c", "php artisan migrate --force && php-fpm -D && nginx -g 'daemon off;'"]
+ 
+ 
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
+
+# this creates the tables
+RUN php artisan migrate --force
+
+EXPOSE 8000
+
+CMD php artisan serve --host=0.0.0.0 --port=8000
