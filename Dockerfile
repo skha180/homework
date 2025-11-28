@@ -41,6 +41,8 @@ RUN php artisan config:cache
 RUN php artisan route:cache
 RUN php artisan view:cache
 
+RUN php artisan db:seed --force
+
 # this creates the tables
 RUN php artisan migrate --force
 
