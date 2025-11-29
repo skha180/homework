@@ -26,9 +26,8 @@ RUN composer install --no-dev --optimize-autoloader
 RUN if [ ! -f .env ]; then cp .env.example .env; fi 
 
 # Laravel setup
-RUN php artisan migrate --force --no-interaction || exit 0
-RUN php artisan db:seed --force || exit 0
-RUN php artisan key:generate --force
+RUN php artisan migrate --force --no-interaction
+RUN php artisan db:seed --force
 RUN php artisan config:cache
 
 EXPOSE 8000

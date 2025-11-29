@@ -21,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if(env('APP_ENV') !== 'local') {
+            URL::forceScheme('https');
+        }
+        
         Gate::define('admin', function($user) {
             return $user->is_admin === 1;
         });
