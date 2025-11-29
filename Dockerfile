@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
     zip \
-    && docker-php-ext-install pdo pdo_mysql zip
+    && docker-php-ext-install pdo pdo_pgsql zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -23,12 +23,7 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 # Copy example env if not present
-RUN if [ ! -f .env ]; then cp .env.example .env; fi
-
- 
-# Create SQLite database file if it doesn't exist
-RUN touch database/database.sqlite
-RUN chmod -R 777 database
+RUN if [ ! -f .env ]; then cp .env.example .env; fi 
 
 # Laravel setup
 RUN php artisan migrate --force --no-interaction || exit 0
