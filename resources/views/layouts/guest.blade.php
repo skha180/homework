@@ -34,7 +34,7 @@
         }
     </script>
 </head>
-<body class="font-sans text-gray-900 antialiased bg-tealblue-light dark:bg-tealblue-dark">
+<body class="font-sans antialiased bg-gray-900 text-gray-100 dark:bg-tealblue-dark">
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
         <div>
             <a href="{{ url('/') }}">

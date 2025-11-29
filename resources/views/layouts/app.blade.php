@@ -33,7 +33,7 @@
     <!-- Alpine.js for interactivity -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="font-sans antialiased bg-tealblue-light dark:bg-tealblue-dark text-gray-900 dark:text-gray-100">
+<body class="font-sans antialiased bg-gray-900 text-gray-100 dark:bg-tealblue-dark dark:text-gray-100">
     <div class="min-h-screen">
         @include('layouts.navigation')
 
