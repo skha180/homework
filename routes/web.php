@@ -19,6 +19,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\CrudController;
 use App\Http\Controllers\AdminController;
+use Illuminate\Controllers\ProfileController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
