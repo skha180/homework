@@ -25,6 +25,7 @@ RUN composer install --no-dev --optimize-autoloader
 # Copy example env if not present
 RUN if [ ! -f .env ]; then cp .env.example .env; fi 
 
+RUN php artisan key:generate --force || true
 # Laravel setup
 RUN php artisan migrate --force 
 RUN php artisan db:seed --class=AdminUserSeeder --force
